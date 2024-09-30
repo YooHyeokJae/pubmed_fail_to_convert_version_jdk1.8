@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.argonet.pubmed.mapper.PubmedMapper">
+    <select id="getArticleId" parameterType="String" resultType="int">
+        SELECT ARTICLE_ID FROM PUBMED_ARTICLE
+        WHERE PMID = #{pmid}
+    </select>
+
+    <select id="getSavedVersion" parameterType="String" resultType="Integer">
+        SELECT PMID_VERSION FROM PUBMED_ARTICLE
+        WHERE PMID = #{pmid}
+    </select>
+
+    <insert id="insertPubmedArticle" parameterType="PubmedArticleVO">
+        INSERT INTO PUBMED_ARTICLE(DATE_COMPLETED, DATE_REVISED, ISSN_PRINT, ISSN_ELECTRONIC, VOLUME, ISSUE, NORM_YM, PUB_YEAR, PUB_MONTH, PUB_DAY,
+                                   MEDLINE_DATE, JOURNAL_TITLE, JOURNAL_TITLE_ABBR, ARTICLE_TITLE, MEDLINE_PGN, ABSTRACT,
+                                   LANGUAGE, VERNACULAR_TITLE, MEDLINE_JOURNAL_COUNTRY, MEDLINE_JOURNAL_TA, MEDLINE_JOURNAL_NLM_ID,
+                                   PUBLICATION_STATUS, PMID, PMID_VERSION, PMC_ID, PII, DOI, MID, REG_DATE, MOD_DATE)
+        VALUES(#{dateCompleted}, #{dateRevised}, #{issnPrint}, #{issnElectronic}, #{volume}, #{issue},  #{normYm}, #{pubYear}, #{pubMonth}, #{pubDay}, #{medlineDate},
+               #{journalTitle}, #{journalTitleAbbr}, #{articleTitle}, #{medlinePgn}, #{abstr}, #{language}, #{vernacularTitle},
+               #{medlineJournalCountry}, #{medlineJournalTa}, #{medlineJournalNlmId}, #{publicationStatus},
+               #{pmid}, #{pmidVersion}, #{pmcId}, #{pii}, #{doi}, #{mid}, #{regDate}, #{modDate})
+    </insert>
+
+    <update id="updatePubmedArticle" parameterType="PubmedArticleVO">
+        UPDATE PUBMED_ARTICLE
+        SET MOD_DATE = #{modDate}
+          , DATE_COMPLETED = #{dateCompleted}
+          , DATE_REVISED = #{dateRevised}
+          , ISSN_PRINT = #{issnPrint}
+          , ISSN_ELECTRONIC = #{issnElectronic}
+          , VOLUME = #{volume}
+          , ISSUE = #{issue}
+          , NORM_YM = #{normYm}
+          , PUB_YEAR = #{pubYear}
+          , PUB_MONTH = #{pubMonth}
+          , PUB_DAY = #{pubDay}
+          , MEDLINE_DATE = #{medlineDate}
+          , JOURNAL_TITLE = #{journalTitle}
+          , JOURNAL_TITLE_ABBR = #{journalTitleAbbr}
+          , ARTICLE_TITLE = #{articleTitle}
+          , MEDLINE_PGN = #{medlinePgn}
+          , ABSTRACT = #{abstr}
+          , LANGUAGE = #{language}
+          , VERNACULAR_TITLE = #{vernacularTitle}
+          , MEDLINE_JOURNAL_COUNTRY = #{medlineJournalCountry}
+          , MEDLINE_JOURNAL_TA = #{medlineJournalTa}
+          , MEDLINE_JOURNAL_NLM_ID = #{medlineJournalNlmId}
+          , PUBLICATION_STATUS = #{publicationStatus}
+          , PMID_VERSION = #{pmidVersion}
+          , PMC_ID = #{pmcId}
+          , PII = #{pii}
+          , DOI = #{doi}
+          , MID = #{mid}
+
+        WHERE PMID = #{pmid}
+    </update>
+
+    <insert id="unionInsertAuthor" parameterType="AuthorVO">
+        INSERT INTO PUBMED_ARTICLE_AUTHOR(ARTICLE_ID, AUTHOR_SEQ, PMID, VALID_YN, EQUAL_CONTRIB, LAST_NAME, FORE_NAME, INITIALS)
+        <foreach collection="list" item="vo" separator="UNION ALL">
+            SELECT #{vo.articleId}, #{vo.authorSeq}, #{vo.pmid}, #{vo.validYn}, #{vo.equalContrib}, #{vo.lastName}, #{vo.foreName}, #{vo.initials} FROM DUAL
+        </foreach>
+    </insert>
+
+    <insert id="unionInsertAffiliation" parameterType="AffiliationVO">
+        INSERT INTO PUBMED_ARTICLE_AFFILIATION(ARTICLE_ID, AUTHOR_SEQ, AFFILIATION_SEQ, PMID, AFFILIATION_INFO, AUTHOR_EMAIL)
+        <foreach collection="list" item="vo" separator="UNION ALL">
+            SELECT #{vo.articleId}, #{vo.authorSeq}, #{vo.affiliationSeq}, #{vo.pmid}, #{vo.affiliationInfo}, #{vo.authorEmail} FROM DUAL
+        </foreach>
+    </insert>
+
+    <insert id="unionInsertMeshHeading" parameterType="MeshHeadingVO">
+        INSERT INTO PUBMED_ARTICLE_MESH(ARTICLE_ID, MESH_SEQ, PMID, MESH_TERMS, MESH_UI, MAJOR_TOPIC_YN)
+        <foreach collection="list" item="vo" separator="UNION ALL">
+            SELECT #{vo.articleId}, #{vo.meshSeq}, #{vo.pmid}, #{vo.meshTerms}, #{vo.meshUi}, #{vo.majorTopicYn} FROM DUAL
+        </foreach>
+    </insert>
+
+    <insert id="unionInsertChemical" parameterType="ChemicalVO">
+        INSERT INTO PUBMED_ARTICLE_CHEMICAL(ARTICLE_ID, CHEMICAL_SEQ, PMID, REGISTRY_NUMBER, CHEMICAL_SUBSTANCE, CHEMICAL_UI)
+        <foreach collection="list" item="vo" separator="UNION ALL">
+            SELECT #{vo.articleId}, #{vo.chemicalSeq}, #{vo.pmid}, #{vo.registryNumber}, #{vo.chemicalSubstance}, #{vo.chemicalUi} FROM DUAL
+        </foreach>
+    </insert>
+
+    <insert id="unionInsertGrant" parameterType="GrantVO">
+        INSERT INTO PUBMED_ARTICLE_CHEMICAL(ARTICLE_ID, GRANT_SEQ, PMID, GRANT_ID, ACRONYM, AGENCY, COUNTRY)
+        <foreach collection="list" item="vo" separator="UNION ALL">
+            SELECT #{vo.articleId}, #{vo.grantSeq}, #{vo.pmid}, #{vo.grantId}, #{vo.acronym}, #{vo.agency}, #{vo.country} FROM DUAL
+        </foreach>
+    </insert>
+
+    <insert id="PUBMED_ARTICLE_REFERENCE" parameterType="ReferenceVO">
+        INSERT INTO PUBMED_ARTICLE_CHEMICAL(ARTICLE_ID, REFERENCE_SEQ, PMID, REFERENCE_PMID, REFERENCE_PMC_ID, REFERENCE_DOI, CITATION)
+        <foreach collection="list" item="vo" separator="UNION ALL">
+            SELECT #{vo.articleId}, #{vo.referenceSeq}, #{vo.pmid}, #{vo.referencePmid}, #{vo.referencePmcId}, #{vo.referenceDoi}, #{vo.citation} FROM DUAL
+        </foreach>
+    </insert>
+</mapper>
+
