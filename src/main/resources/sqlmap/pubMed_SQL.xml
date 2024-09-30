@@ -22,6 +22,36 @@
                #{pmid}, #{pmidVersion}, #{pmcId}, #{pii}, #{doi}, #{mid}, #{regDate}, #{modDate})
     </insert>
 
+    <delete id="deleteAffiliation" parameterType="String">
+        DELETE FROM PUBMED_ARTICLE_AFFILIATION
+        WHERE PMID = #{pmid}
+    </delete>
+
+    <delete id="deleteAuthor" parameterType="String">
+        DELETE FROM PUBMED_ARTICLE_AUTHOR
+        WHERE PMID = #{pmid}
+    </delete>
+
+    <delete id="deleteMeshHeading" parameterType="String">
+        DELETE FROM PUBMED_ARTICLE_MESH
+        WHERE PMID = #{pmid}
+    </delete>
+
+    <delete id="deleteChemical" parameterType="String">
+        DELETE FROM PUBMED_ARTICLE_CHEMICAL
+        WHERE PMID = #{pmid}
+    </delete>
+
+    <delete id="deleteGrant" parameterType="String">
+        DELETE FROM PUBMED_ARTICLE_GRANT
+        WHERE PMID = #{pmid}
+    </delete>
+
+    <delete id="deleteReference" parameterType="String">
+        DELETE FROM PUBMED_ARTICLE_REFERENCE
+        WHERE PMID = #{pmid}
+    </delete>
+
     <update id="updatePubmedArticle" parameterType="PubmedArticleVO">
         UPDATE PUBMED_ARTICLE
         SET MOD_DATE = #{modDate}

@@ -17,12 +17,18 @@ public class PubmedService {
     }
 
     public PubmedArticleVO insertPubmedArticle(PubmedArticleVO pubmedArticle) {
-        int cnt;
+        int cnt = 0;
         int savedVersion = this.pubmedMapper.getSavedVersion(pubmedArticle.getPmid());
         if(savedVersion < pubmedArticle.getPmidVersion()){
-            cnt = this.pubmedMapper.insertPubmedArticle(pubmedArticle);
+            cnt += this.pubmedMapper.insertPubmedArticle(pubmedArticle);
         }else{
-            cnt = this.pubmedMapper.updatePubmedArticle(pubmedArticle);
+            cnt += this.pubmedMapper.deleteAffiliation(pubmedArticle.getPmid());
+            cnt += this.pubmedMapper.deleteAuthor(pubmedArticle.getPmid());
+            cnt += this.pubmedMapper.deleteMeshHeading(pubmedArticle.getPmid());
+            cnt += this.pubmedMapper.deleteChemical(pubmedArticle.getPmid());
+            cnt += this.pubmedMapper.deleteGrant(pubmedArticle.getPmid());
+            cnt += this.pubmedMapper.deleteReference(pubmedArticle.getPmid());
+            cnt += this.pubmedMapper.updatePubmedArticle(pubmedArticle);
         }
         if(cnt > 0) return pubmedArticle;
         else        return null;

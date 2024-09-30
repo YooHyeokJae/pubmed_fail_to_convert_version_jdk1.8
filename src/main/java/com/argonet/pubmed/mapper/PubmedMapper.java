@@ -13,6 +13,18 @@ public interface PubmedMapper {
 
     int insertPubmedArticle(PubmedArticleVO pubmedArticle);
 
+    int deleteAffiliation(String pmid);
+
+    int deleteAuthor(String pmid);
+
+    int deleteMeshHeading(String pmid);
+
+    int deleteChemical(String pmid);
+
+    int deleteGrant(String pmid);
+
+    int deleteReference(String pmid);
+
     int updatePubmedArticle(PubmedArticleVO pubmedArticle);
 
     int unionInsertAuthor(List<AuthorVO> authorVOList);
